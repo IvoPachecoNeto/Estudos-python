@@ -1,0 +1,99 @@
+import os
+import pygame
+import customtkinter
+from tkinter import Listbox, END
+
+# Inicialização do pygame
+pygame.mixer.init()
+origem = r"C:\Users\Ivo\Music"
+musicas = []
+playlists = []
+musica_atual = 0
+
+# Criação da interface gráfica
+janela = customtkinter.CTk()
+janela.geometry("500x300")
+
+# Buscar músicas no diretório especificado
+for caminho, subpasta, arquivos in os.walk(origem):
+    for nome in arquivos:
+        if nome.endswith(('.mp3', '.wav')):
+            musicas.append(os.path.join(caminho, nome))
+
+for caminho, subpasta, arquivos in os.walk(origem):
+    for nome in subpasta:
+        playlists.append(os.path.join(caminho, nome))
+
+def play():
+    if musicas:
+        pygame.mixer.music.load(musicas[lista_de_musicas.curselection()[0]])
+        pygame.mixer.music.play()
+
+def proxima():
+    global musica_atual
+    if musicas:
+        musica_atual = (musica_atual + 1) % len(musicas)
+        play()
+
+def voltar():
+    global musica_atual
+    if musicas:
+        musica_atual = (musica_atual - 1) % len(musicas)
+        play()
+
+def listar_musicas():
+    lista_de_musicas.delete(0, END)
+    for musica in musicas:
+        lista_de_musicas.insert(END, os.path.basename(musica))
+    lista_de_playlists.delete(0, END)
+    for playlist in playlists:
+        lista_de_playlists.insert(END, os.path.basename(playlist))
+
+def pausar_musica():
+   pygame.mixer.music.pause()
+
+# Widgets da interface
+texto = customtkinter.CTkLabel(janela, text='O que gostaria de escutar hoje?')
+texto.grid(row=0, column=1, padx=10, pady=10, sticky='nsew')
+
+texto2 = customtkinter.CTkLabel(janela, text='Playlists')
+texto2.grid(row=0, column=0, padx=10, pady=10, sticky='nsew')
+
+lista_de_playlists = Listbox(janela, width=20, height=10)
+lista_de_playlists.grid(row=1, column=0, padx=10, pady=10, sticky='nsew')
+
+lista_de_musicas = Listbox(janela, width=50, height=10)
+lista_de_musicas.grid(row=1, column=1, padx=10, pady=10, columnspan=2, rowspan=4, sticky='nsew')
+
+botao_voltar = customtkinter.CTkButton(janela, text=' <<=', command=voltar, corner_radius=20)
+botao_voltar.grid(row=6, column=0, padx=5, pady=5, sticky='nsew')
+
+botao_pausar =  customtkinter.CTkButton(janela, text = 'Pausar', command = pausar_musica, corner_radius= 20)
+botao_pausar.grid(row = 7, column= 1, padx = 5, pady= 5, sticky= 'nsew')
+
+botao_play = customtkinter.CTkButton(janela, text='Play', command=play, corner_radius=20)
+botao_play.grid(row=6, column=1, padx=5, pady=5, sticky='nsew')
+
+botao_adiantar = customtkinter.CTkButton(janela, text=' =>>', command=proxima, corner_radius=20)
+botao_adiantar.grid(row=6, column=2, padx=5, pady=5, sticky='nsew')
+
+botao_listar = customtkinter.CTkButton(janela, text='Listar Músicas', command=listar_musicas, corner_radius=20)
+botao_listar.grid(row=4, column=0, padx=5, pady=5, sticky='nsew')
+
+# Configuração de expansão da grid
+janela.grid_rowconfigure(0, weight=1)
+janela.grid_rowconfigure(1, weight=3)
+janela.grid_rowconfigure(2, weight=1)
+janela.grid_rowconfigure(3, weight=1)
+janela.grid_rowconfigure(4, weight=1)
+janela.grid_rowconfigure(5, weight=1)
+janela.grid_rowconfigure(6, weight=1)
+janela.grid_columnconfigure(0, weight=1)
+janela.grid_columnconfigure(1, weight=1)
+janela.grid_columnconfigure(2, weight=1)
+
+# Listar as músicas no início
+listar_musicas()
+
+# Executar a interface gráfica
+janela.mainloop()
